@@ -25,7 +25,7 @@ namespace TETRIS
         {
             foreach (POSITION P in TILES[ROT_STATE])
             {
-                yield return new POSITION(P.ROW + OFFSET.ROW, P.COLUMN);
+                yield return new POSITION(P.ROW + OFFSET.ROW, P.COLUMN + OFFSET.COLUMN);
             }
         }
 

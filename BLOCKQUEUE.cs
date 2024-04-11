@@ -20,11 +20,11 @@ namespace TETRIS
         };
 
         private readonly Random RND = new Random();
-        public BLOCK NXT_BLOCK { get; private set; }
+        public BLOCK nxt_BLOCK { get; private set; }
 
         public BLOCKQUEUE()
         {
-            NXT_BLOCK = RND_BLOCK();
+            nxt_BLOCK = RND_BLOCK();
         }
 
         private BLOCK RND_BLOCK()
@@ -34,12 +34,12 @@ namespace TETRIS
 
         public BLOCK GET_AND_UPD()
         {
-            BLOCK BLOCK = NXT_BLOCK;
+            BLOCK BLOCK = nxt_BLOCK;
             do
             {
-                NXT_BLOCK = RND_BLOCK();
+                nxt_BLOCK = RND_BLOCK();
             }
-            while (BLOCK.ID == NXT_BLOCK.ID);
+            while (BLOCK.ID == nxt_BLOCK.ID);
             return BLOCK;
         }
     }

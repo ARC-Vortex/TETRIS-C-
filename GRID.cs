@@ -8,21 +8,21 @@ namespace TETRIS
 {
     public class GRID
     {
-        private readonly int[,] grid;
+        private readonly int[,] gr;
         public int ROWS { get;  }
         public int COLUMNS { get; }
 
         public int this[int R, int C]
         {
-            get => grid[R, C];
-            set => grid[R, C] = value;
+            get => gr[R, C];
+            set => gr[R, C] = value;
         }
 
         public GRID(int ROW, int COLUMN)
         {
             ROWS = ROW;
             COLUMNS = COLUMN;
-            grid = new int[ROW, COLUMN];
+            gr = new int[ROW, COLUMN];
         }
 
         public bool IS_INSIDE(int R, int C)
@@ -32,14 +32,14 @@ namespace TETRIS
 
         public bool IS_EMPTY(int R, int C)
         {
-            return IS_INSIDE(R, C) && grid[R, C] == 0;
+            return IS_INSIDE(R, C) && gr[R, C] == 0;
         }
 
         public bool IS_ROW_FULL(int R)
         {
             for (int C = 0; C < COLUMNS; C++)
             {
-                if (grid[R, C] == 0)
+                if (gr[R, C] == 0)
                 {
                     return false;
                 }
@@ -51,7 +51,7 @@ namespace TETRIS
         {
             for (int C = 0; C < COLUMNS; C++)
             {
-                if (grid[R, C] != 0)
+                if (gr[R, C] != 0)
                 {
                     return false;
                 }
@@ -63,7 +63,7 @@ namespace TETRIS
         {
             for (int C = 0; C < COLUMNS; C++)
             {
-                grid[R, C] = 0;
+                gr[R, C] = 0;
             }
         }
 
@@ -71,8 +71,8 @@ namespace TETRIS
         {
             for (int C = 0; C < COLUMNS; C++)
             {
-                grid[R + NUMROWS, C] = grid[R, C];
-                grid[R, C] = 0;
+                gr[R + NUMROWS, C] = gr[R, C];
+                gr[R, C] = 0;
             }
         }
 

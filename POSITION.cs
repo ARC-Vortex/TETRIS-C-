@@ -8,8 +8,8 @@ namespace TETRIS
 {
     public class POSITION
     {
-        public int ROW { get; set; }
-        public int COLUMN { get; set; }
+        public int ROW { get; set; } = 0;
+        public int COLUMN { get; set; } = 0;
 
         public POSITION(int row, int column)
         {

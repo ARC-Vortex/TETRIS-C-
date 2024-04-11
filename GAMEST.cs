@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,35 +9,44 @@ namespace TETRIS
 {
     public class GAMEST
     {
-        private BLOCK CRT_BLOCK;
+        private BLOCK currentBlock;
 
-        public BLOCK CURRENT_BLOCK
+        public BLOCK CurrentBlock
         {
-            get => CRT_BLOCK;
+            get => currentBlock;
             private set
             {
-                CURRENT_BLOCK = value;
-                CURRENT_BLOCK.RESET();
+                currentBlock = value;
+                currentBlock.RESET();
+
+                for (int I = 0; I < 2; I++)
+                {
+                    currentBlock.MOVE(1, 0);
+                    if (!BLOCK_F())
+                    {
+                        currentBlock.MOVE(-1, 0);
+                    }
+                }
             }
         }
 
-        public GRID grid { get; }
+        public GRID gr { get; }
         public BLOCKQUEUE blockQueue { get; }
-
         public bool gameOver { get; private set; }
+        public int Score { get; private set; }
 
         public GAMEST()
         {
-            grid = new GRID(22, 10);
+            gr = new GRID(22, 10);
             blockQueue = new BLOCKQUEUE();
-            CURRENT_BLOCK = blockQueue.GET_AND_UPD();
+            CurrentBlock = blockQueue.GET_AND_UPD();
         }
 
         private bool BLOCK_F()
         {
-            foreach (POSITION P in CURRENT_BLOCK.TILE_POSITION())
+            foreach (POSITION P in CurrentBlock.TILE_POSITION())
             {
-                if (!grid.IS_EMPTY(P.ROW, P.COLUMN))
+                if (!gr.IS_EMPTY(P.ROW, P.COLUMN))
                 {
                     return false;
                 }
@@ -46,57 +56,58 @@ namespace TETRIS
 
         public void ROT_BLOCK_CW()
         {
-            CURRENT_BLOCK.ROT_CW();
+            CurrentBlock.ROT_CW();
 
             if (!BLOCK_F())
             {
-                CURRENT_BLOCK.ROT_CCW();
+                CurrentBlock.ROT_CCW();
             }
         }
 
         public void ROT_BLOCK_CCW()
         {
-            CURRENT_BLOCK.ROT_CCW();
+            CurrentBlock.ROT_CCW();
+
             
             if (!BLOCK_F())
             {
-                CURRENT_BLOCK.ROT_CW();
+                CurrentBlock.ROT_CW();
             }
         }
 
-        public void MOVE_BLOCK_LF()
+        public void MOVE_LEFT()
         {
-            CURRENT_BLOCK.MOVE(0, -1);
+            CurrentBlock.MOVE(0, -1);
 
             if(!BLOCK_F())
             {
-                CURRENT_BLOCK.MOVE(0, 1);
+                CurrentBlock.MOVE(0, 1);
             }
         }
 
-        public void MOVE_BLOCK_RG()
+        public void MOVE_RIGHT()
         {
-            CURRENT_BLOCK.MOVE(0, 1);
+            CurrentBlock.MOVE(0, 1);
 
             if (!BLOCK_F())
             {
-                CURRENT_BLOCK.MOVE(0, -1);
+                CurrentBlock.MOVE(0, -1);
             }
         }
 
         private bool IS_GAME_OVER()
         {
-            return !(grid.IS_ROW_EMPTY(0) && grid.IS_ROW_EMPTY(1));
+            return !(gr.IS_ROW_EMPTY(0) && gr.IS_ROW_EMPTY(1));
         }
 
         private void PLC_BLOCK()
         {
-            foreach (POSITION P in CURRENT_BLOCK.TILE_POSITION())
+            foreach (POSITION P in CurrentBlock.TILE_POSITION())
             {
-                grid[P.ROW, P.COLUMN] = CURRENT_BLOCK.ID;
+                gr[P.ROW, P.COLUMN] = CurrentBlock.ID;
             }
 
-            grid.CLEAR_FULL_ROWS();
+            Score += gr.CLEAR_FULL_ROWS();
 
             if (IS_GAME_OVER())
             {
@@ -104,19 +115,50 @@ namespace TETRIS
             }
             else
             {
-                CURRENT_BLOCK = blockQueue.GET_AND_UPD();
+                CurrentBlock = blockQueue.GET_AND_UPD();
             }
         }
 
         public void MOVE_BLOCK_DW()
         {
-            CURRENT_BLOCK.MOVE(1, 0);
+            CurrentBlock.MOVE(1, 0);
 
             if (!BLOCK_F())
             {
-                CURRENT_BLOCK.MOVE(-1, 0);
+                CurrentBlock.MOVE(-1, 0);
                 PLC_BLOCK();
             }
+        }
+
+        private int TILE_DROP_DIST(POSITION P)
+        {
+            int drop = 0;
+
+            while (gr.IS_EMPTY(P.ROW + drop + 1, P.COLUMN))
+            {
+                drop++;
+            }
+
+            return drop;
+        }
+
+        public int BLOCK_DROP_DIST()
+        {
+            int drop = gr.ROWS;
+
+            foreach (POSITION P in CurrentBlock.TILE_POSITION())
+            {
+                drop = System.Math.Min(drop, TILE_DROP_DIST(P));
+            }
+
+            return drop;
+        }
+
+        public void DROP()
+        {
+            CurrentBlock.MOVE(BLOCK_DROP_DIST(), 0);
+            PLC_BLOCK();
+            
         }
     }
 }
